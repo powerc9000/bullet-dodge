@@ -78,6 +78,20 @@
       ctx.textAlign = "left";
       ctx.textBaseline = "bottom";
       ctx.fillText("Bullets: "+bulletspassed,20, canvas.height-20);
+      //sheilds
+      ctx.fillStyle = "rgb(250, 250, 250)";
+      ctx.font = "24px Helvetica";
+      ctx.textAlign = "left";
+      ctx.textBaseline = "bottom";
+      ctx.fillText("Shields: "+sheilds,canvas.width/2, canvas.height-20);
+      //shield time
+      if(hero.sheild){
+        ctx.fillStyle = "rgb(250, 0, 0)";
+        ctx.fillRect(hero.x+10, hero.y-5,30,5);
+        ctx.fillStyle = "rgb(0, 250, 0)";
+        ctx.fillRect(hero.x+10, hero.y-5,30*(hero.sheildtimeleft/10),5);
+      }
+      
    }
    renderbullets = function(){
       for(i in bullets){
@@ -127,11 +141,8 @@
         else{
           restart()
         }
-        
       }
-      
     }
-    
    }
    restart = function(){
     hero.x = 20
@@ -141,6 +152,7 @@
     once = []
     score = 0
     bulletspassed = 0
+    sheilds = 3
    }
     
    
@@ -174,14 +186,21 @@
         sheilds -= 1
         hero.sheild = true
         hero.sheildstart = survived
+        hero.sheildtimeleft = 10
       }
     }
     
   }
   deactivateSheild = function(survived){
-    if(survived - hero.sheildstart >= 10){
-      hero.sheild = false
+    if(hero.sheild){
+      if(survived - hero.sheildstart >= 10){
+        hero.sheild = false
+      }
+      else{
+        hero.sheildtimeleft = 10 - ( survived - hero.sheildstart)
+      }
     }
+    
   }
    main = function(){
     now = Date.now()
