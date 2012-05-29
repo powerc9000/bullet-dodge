@@ -1,0 +1,175 @@
+<html>
+<head>
+    <title>8-bit fighiting of death</title>
+</head>
+<body>
+</body>
+<script type="text/javascript">
+   var canvas = document.createElement("canvas");
+
+   var ctx = canvas.getContext("2d");
+
+   canvas.width = 500;
+
+   canvas.height = 500;
+
+   document.body.appendChild(canvas);
+
+   bgLoaded = false
+   bg = new Image()
+
+   bg.onload = function(){
+    bgLoaded = true
+   }
+
+   bg.src = "img/bg.png"
+
+   chara = new Image()
+   charaLoaded = false
+   chara.onload = function(){
+    charaLoaded = true
+   }
+   chara.src = "img/char.png"
+
+   bulletimg = new Image()
+   bulletLoaded = false
+   bulletimg.onload = function(){
+    bulletLoaded = true
+   }
+   bulletimg.src = "img/bullet.png"
+
+   var keysDown = {};
+
+   addEventListener("keydown", function (e) {
+    keysDown[e.keyCode] = true;
+   }, false);
+
+   addEventListener("keyup", function (e) {
+    delete keysDown[e.keyCode];
+   }, false);
+
+   hero = {
+    x:20,
+    y:20,
+    speed: 200
+   }
+   bullets = []
+   render = function(){
+    if (bgLoaded) {
+         ctx.drawImage(bg, 0,0);
+     }
+
+    if (charaLoaded) {
+         ctx.drawImage(chara, hero.x, hero.y);
+     }
+     if(bulletLoaded){
+      renderbullets()
+     }
+      ctx.fillStyle = "rgb(250, 250, 250)";
+      ctx.font = "24px Helvetica";
+      ctx.textAlign = "right";
+      ctx.textBaseline = "bottom";
+      ctx.fillText("Score: "+score,canvas.width-20,  canvas.height-20);
+      ctx.fillStyle = "rgb(250, 250, 250)";
+      ctx.font = "24px Helvetica";
+      ctx.textAlign = "left";
+      ctx.textBaseline = "bottom";
+      ctx.fillText("Bullets: "+bulletspassed,20, canvas.height-20);
+   }
+   renderbullets = function(){
+      for(i in bullets){
+        bullet = bullets[i]
+        ctx.drawImage(bulletimg, bullet.x, bullet.y);
+      }
+   }
+   randomInt= function(min,max){
+    return Math.round(Math.random() * (max - min) + min)
+   }
+   updatebullets = function(modifier,survived,once){
+    bulletcount = bullets.length
+    if(bulletcount === 0 ){
+        bullets.push({"x":500,"y":hero.y,"speed":250}) 
+      }
+    if(survived % 10 === 0){
+      if(!once[survived]){
+        bullets.push({"x":randomInt(500,550),"y":hero.y,"speed":randomInt(200,300)})
+        once[survived] = true
+      }
+      
+    }
+    for(i in bullets){
+      bullet = bullets[i]
+      if(bullet.x <= 0){
+        bullet.x = 500
+        bullet.y = randomInt(hero.y,hero.y+50)
+        bulletspassed+=1
+      }
+      else{
+        bullet.x -= bullet.speed * modifier
+      }
+      if(
+        hero.x <= (bullet.x + bulletimg.width)
+        && bullet.x <= (hero.x + chara.width)
+        && hero.y <= (bullet.y + bulletimg.height)
+        && bullet.y <= (hero.y + chara.height)
+    )
+      {
+        
+        restart()
+      }
+      
+    }
+    
+   }
+   restart = function(){
+    hero.x = 20
+    hero.y = 20
+    bullets = []
+    survived = 1
+    once = []
+    score = 0
+    bulletspassed = 0
+   }
+    
+   
+   update = function(modifier,survived,once){
+    
+    maxy = 480
+    maxx = 480
+    miny = 20
+    minx = 20
+      if (38 in keysDown) { // Player holding up
+        (hero.y <= miny) ? miny : hero.y -= hero.speed * modifier
+      }
+      if (40 in keysDown) { // Player holding down
+        (hero.y >= maxy - chara.height) ? maxy : hero.y += hero.speed * modifier
+      }
+      if (37 in keysDown) { // Player holding left
+        (hero.x <= minx) ? minx : hero.x -= hero.speed * modifier
+      }
+      if (39 in keysDown) { // Player holding right
+        (hero.x >= maxx - chara.height) ? maxx : hero.x += hero.speed * modifier
+      }
+      updatebullets(modifier,survived,once)
+   }
+
+   main = function(){
+    now = Date.now()
+    delta = now - then
+    update(delta/1000,parseInt(survived),once)
+    render()
+    then = now
+    survived += delta/1000
+    score = parseInt((survived/10)*bullets.length,10)
+    //console.log(score)
+   }
+   then = Date.now()
+   survived = 1
+   once = []
+   bulletspassed = 0
+   score = 0
+   setInterval(main,1)
+   
+
+</script>
+</html>
