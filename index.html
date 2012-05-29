@@ -50,8 +50,9 @@
 
    hero = {
     x:20,
-    y:20,
-    speed: 200
+    y:canvas.height/2,
+    speed: 200,
+    sheild:false
    }
    bullets = []
    render = function(){
@@ -65,11 +66,13 @@
      if(bulletLoaded){
       renderbullets()
      }
+     //score
       ctx.fillStyle = "rgb(250, 250, 250)";
       ctx.font = "24px Helvetica";
       ctx.textAlign = "right";
       ctx.textBaseline = "bottom";
       ctx.fillText("Score: "+score,canvas.width-20,  canvas.height-20);
+      //bullets
       ctx.fillStyle = "rgb(250, 250, 250)";
       ctx.font = "24px Helvetica";
       ctx.textAlign = "left";
@@ -98,15 +101,18 @@
       
     }
     for(i in bullets){
-      bullet = bullets[i]
-      if(bullet.x <= 0){
+      if(bulletcount > 0){
+        if(bullet.x <= 0){
         bullet.x = 500
         bullet.y = randomInt(hero.y,hero.y+50)
         bulletspassed+=1
+        }
+        else{
+          bullet.x -= bullet.speed * modifier
+        }
       }
-      else{
-        bullet.x -= bullet.speed * modifier
-      }
+      bullet = bullets[i]
+      
       if(
         hero.x <= (bullet.x + bulletimg.width)
         && bullet.x <= (hero.x + chara.width)
@@ -114,8 +120,14 @@
         && bullet.y <= (hero.y + chara.height)
     )
       {
+        console.log(hero.sheild)
+        if(hero.sheild){
+          bullets.splice(i)
+        }
+        else{
+          restart()
+        }
         
-        restart()
       }
       
     }
@@ -123,7 +135,7 @@
    }
    restart = function(){
     hero.x = 20
-    hero.y = 20
+    hero.y = canvas.width/2
     bullets = []
     survived = 1
     once = []
@@ -150,9 +162,27 @@
       if (39 in keysDown) { // Player holding right
         (hero.x >= maxx - chara.height) ? maxx : hero.x += hero.speed * modifier
       }
+      if(88 in keysDown){
+        activateSheild(survived)
+      }
+      deactivateSheild(survived)
       updatebullets(modifier,survived,once)
    }
-
+  activateSheild = function(survived){
+    if(!hero.sheild ){
+      if(sheilds >0 ){
+        sheilds -= 1
+        hero.sheild = true
+        hero.sheildstart = survived
+      }
+    }
+    
+  }
+  deactivateSheild = function(survived){
+    if(survived - hero.sheildstart >= 10){
+      hero.sheild = false
+    }
+  }
    main = function(){
     now = Date.now()
     delta = now - then
@@ -160,10 +190,12 @@
     render()
     then = now
     survived += delta/1000
-    score = parseInt((survived/10)*bullets.length,10)
+    score = Math.ceil(survived)
     //console.log(score)
    }
+
    then = Date.now()
+   sheilds = 3
    survived = 1
    once = []
    bulletspassed = 0
