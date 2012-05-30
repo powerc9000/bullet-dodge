@@ -189,6 +189,7 @@
         hero.flame = true
       }
       else{
+        (hero.y >= maxy- chara.height) ? maxy : hero.y += (hero.speed/4) * modifier
         hero.flame = false
       }
       if (40 in keysDown) { // Player holding down
