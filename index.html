@@ -4,9 +4,12 @@
     <title>8-bit fighiting of death</title>
 </head>
 <body>
+  <canvas id="game"></canvas>
+  <br>
+  <button onClick="start()">Start / Restart Game</start>
 </body>
 <script type="text/javascript">
-   var canvas = document.createElement("canvas");
+   var canvas = document.getElementById("game");
    canvas.innerHTML = "I guess canvs is not supported soooooooooooooooo I guess no game for you!"
    var ctx = canvas.getContext("2d");
 
@@ -14,7 +17,6 @@
 
    canvas.height = 500;
 
-   document.body.appendChild(canvas);
 
    bgLoaded = false
    bg = new Image()
@@ -119,7 +121,7 @@
    }
    updatebullets = function(modifier,survived,once){
     bulletcount = bullets.length
-    console.log(bullets)
+    
     if(bulletcount === 0 ){
         bullets.push({"x":500,"y":hero.y,"speed":250}) 
       }
@@ -135,7 +137,7 @@
       if(bulletcount > 0){
         if(bullet.x <= 0){
         bullet.x = 500
-        bullet.y = randomInt(hero.y,hero.y+50)
+        bullet.y = randomInt(hero.y-75,hero.y+75)
         
         }
         else{
@@ -157,6 +159,7 @@
         else{
 
           gamestate.running = false
+          gamestate.gameEnd = true
           
         }
       }
@@ -164,13 +167,14 @@
    }
    restart = function(){
     hero.x = 20
-    hero.y = canvas.width/2
+    hero.y = (canvas.height -20)-chara.height
     bullets = []
     survived = 1
     once = []
     score = 0
-    
+    gamestate.countdown = true
     sheilds = 3
+    then = Date.now()
    }
     
    
@@ -225,31 +229,70 @@
     }
     
   }
+  countdown = function(then,now){
+    //gamestate.countdown = false
+    
+    seconds = parseInt((now-then)/1000,10)
+    if(seconds <= 3){
+      time = (seconds - 3) * -1
+      ctx.clearRect(0,0,canvas.width,canvas.height)
+      ctx.fillStyle = "rgb(0, 0, 0)";
+      ctx.font = "50px Helvetica";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "bottom";
+      if(time === 0){
+        ctx.fillText("Go!",canvas.width/2, canvas.height/2);        
+      }
+      else{
+        ctx.fillText(time,canvas.width/2, canvas.height/2);
+      }
+      
+    }
+    else{
+      restart()
+      gamestate.countdown = false
+
+    }
+  }
   gamestate = {
-    running : true
+    running : false,
+    gameEnd : false,
+    countdown : false,
   }
    main = function(){
       if(gamestate.running){
-        now = Date.now()
-        delta = now - then
-        update(delta/1000,parseInt(survived),once)
-        render()
-        then = now
-        survived += delta/1000
-        score = Math.ceil(survived)
+          if(gamestate.countdown){
+            countdown(then,Date.now())
+          }
+          else{
+            now = Date.now()
+            delta = now - then
+            update(delta/1000,parseInt(survived),once)
+            render()
+            then = now
+            survived += delta/1000
+            score = Math.ceil(survived)
+          } 
       }
       else{
-        ctx.clearRect(0,0,500,500)
-        ctx.fillStyle = "rgb(0, 0, 0)";
-        ctx.font = "24px Helvetica";
-        ctx.textAlign = "left";
-        ctx.textBaseline = "top";
-        ctx.fillText("Too bad you lost \n Your final score was: "+score,30,30);
+        if(gamestate.gameEnd){
+          ctx.clearRect(0,0,500,500)
+          ctx.fillStyle = "rgb(0, 0, 0)";
+          ctx.font = "24px Helvetica";
+          ctx.textAlign = "left";
+          ctx.textBaseline = "top";
+          ctx.fillText("Too bad you lost Your final score was: "+score,30,30);
+        }
+        
       }
       
     //console.log(score)
    }
-
+   start = function(){
+    restart()
+    gamestate.running = true
+    
+   }
    then = Date.now()
    sheilds = 3
    survived = 1
