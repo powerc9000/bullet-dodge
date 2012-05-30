@@ -148,7 +148,7 @@
       }
     if(survived % 10 === 0){
       if(!once[survived]){
-        bullets.push({"x":randomInt(500,550),"y":hero.y,"speed":randomInt(200,300)})
+        bullets.push({"x":randomInt(500,550),"y":hero.y,"speed":randomInt(200,300),speedchange:false})
         once[survived] = true
       }
       
@@ -156,6 +156,10 @@
     for(i in bullets){
       bullet = bullets[i]
       if(bulletcount > 0){
+        if(score > 75 && !bullet.speedchange){
+          bullet.speed += 100
+          bullet.speedchange = true
+        }
         if(bullet.x <= 0){
         bullet.x = 500
         bullet.y = randomInt(hero.y-75,hero.y+75)
