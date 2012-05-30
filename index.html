@@ -92,12 +92,6 @@
       ctx.textAlign = "right";
       ctx.textBaseline = "bottom";
       ctx.fillText("Score: "+score,canvas.width-20,  canvas.height-20);
-      //bullets
-      ctx.fillStyle = "rgb(250, 250, 250)";
-      ctx.font = "24px Helvetica";
-      ctx.textAlign = "left";
-      ctx.textBaseline = "bottom";
-      ctx.fillText("Bullets: "+bulletspassed,20, canvas.height-20);
       //sheilds
       ctx.fillStyle = "rgb(250, 250, 250)";
       ctx.font = "24px Helvetica";
@@ -142,7 +136,7 @@
         if(bullet.x <= 0){
         bullet.x = 500
         bullet.y = randomInt(hero.y,hero.y+50)
-        bulletspassed+=1
+        
         }
         else{
           bullet.x -= bullet.speed * modifier
@@ -161,7 +155,9 @@
           bullets.splice(i,1)
         }
         else{
-          restart()
+
+          gamestate.running = false
+          
         }
       }
     }
@@ -173,7 +169,7 @@
     survived = 1
     once = []
     score = 0
-    bulletspassed = 0
+    
     sheilds = 3
    }
     
@@ -229,14 +225,28 @@
     }
     
   }
+  gamestate = {
+    running : true
+  }
    main = function(){
-    now = Date.now()
-    delta = now - then
-    update(delta/1000,parseInt(survived),once)
-    render()
-    then = now
-    survived += delta/1000
-    score = Math.ceil(survived)
+      if(gamestate.running){
+        now = Date.now()
+        delta = now - then
+        update(delta/1000,parseInt(survived),once)
+        render()
+        then = now
+        survived += delta/1000
+        score = Math.ceil(survived)
+      }
+      else{
+        ctx.clearRect(0,0,500,500)
+        ctx.fillStyle = "rgb(0, 0, 0)";
+        ctx.font = "24px Helvetica";
+        ctx.textAlign = "left";
+        ctx.textBaseline = "top";
+        ctx.fillText("Too bad you lost \n Your final score was: "+score,30,30);
+      }
+      
     //console.log(score)
    }
 
@@ -244,9 +254,9 @@
    sheilds = 3
    survived = 1
    once = []
-   bulletspassed = 0
+   
    score = 0
-   setInterval(main,1)
+   var refreshId = setInterval(main,1)
    
 
 </script>
