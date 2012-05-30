@@ -52,6 +52,18 @@
     charflame.onload = function(){
     charflameLoaded = true
    }
+   charadeadLoaded = false
+   charadead = new Image()
+   charadead.src = "img/dead.png"
+    charadead.onload = function(){
+    charadeadLoaded = true
+   }
+   splashLoaded = false
+   splash = new Image()
+   splash.src = "img/splash.png"
+    splash.onload = function(){
+    splashLoaded = true
+   }
    
 
    var keysDown = {};
@@ -77,12 +89,18 @@
      }
 
     if (charaLoaded) {
+      if(!hero.dead){
         if(hero.flame){
           ctx.drawImage(charflame, hero.x, hero.y);
         }
         else{
           ctx.drawImage(chara, hero.x, hero.y);
         }
+      }
+      else{
+        ctx.drawImage(charadead, hero.x, hero.y);
+      }
+       
          
      }
      if(bulletLoaded){
@@ -157,9 +175,11 @@
           bullets.splice(i,1)
         }
         else{
-
-          gamestate.running = false
-          gamestate.gameEnd = true
+          renderDeath(function(){
+            gamestate.running = false
+            gamestate.gameEnd = true
+          })
+          
           
         }
       }
@@ -175,6 +195,7 @@
     gamestate.countdown = true
     sheilds = 3
     then = Date.now()
+    hero.dead = false
    }
     
    
@@ -184,6 +205,7 @@
     maxx = 480
     miny = 20
     minx = 20
+    if(!hero.dead){
       if (38 in keysDown) { // Player holding up
         (hero.y <= miny) ? miny : hero.y -= hero.speed * modifier
         hero.flame = true
@@ -206,6 +228,8 @@
       }
       deactivateSheild(survived)
       updatebullets(modifier,survived,once)
+    }
+      
    }
   activateSheild = function(survived){
     if(!hero.sheild ){
@@ -254,6 +278,10 @@
 
     }
   }
+  renderDeath = function(callback){
+    hero.dead = true
+    setTimeout(callback,1500)
+  }
   gamestate = {
     running : false,
     gameEnd : false,
@@ -282,6 +310,12 @@
           ctx.textAlign = "left";
           ctx.textBaseline = "top";
           ctx.fillText("Too bad you lost Your final score was: "+score,30,30);
+        }
+        else{
+          if(splashLoaded){
+            ctx.drawImage(splash,0,0,500,500)
+          }
+          
         }
         
       }
