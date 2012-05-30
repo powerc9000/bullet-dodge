@@ -1,3 +1,4 @@
+<!doctype html>
 <html>
 <head>
     <title>8-bit fighiting of death</title>
@@ -6,7 +7,7 @@
 </body>
 <script type="text/javascript">
    var canvas = document.createElement("canvas");
-
+   canvas.innerHTML = "I guess canvs is not supported soooooooooooooooo I guess no game for you!"
    var ctx = canvas.getContext("2d");
 
    canvas.width = 500;
@@ -37,6 +38,13 @@
     bulletLoaded = true
    }
    bulletimg.src = "img/bullet.png"
+   sheildLoaded = false
+   sheildimg = new Image()
+   sheildimg.src = "img/shield.png"
+    sheildimg.onload = function(){
+    sheildLoaded = true
+   }
+   
 
    var keysDown = {};
 
@@ -86,6 +94,7 @@
       ctx.fillText("Shields: "+sheilds,canvas.width/2, canvas.height-20);
       //shield time
       if(hero.sheild){
+        ctx.drawImage(sheildimg, hero.x+chara.width, hero.y)
         ctx.fillStyle = "rgb(250, 0, 0)";
         ctx.fillRect(hero.x+10, hero.y-5,30,5);
         ctx.fillStyle = "rgb(0, 250, 0)";
@@ -104,6 +113,7 @@
    }
    updatebullets = function(modifier,survived,once){
     bulletcount = bullets.length
+    console.log(bullets)
     if(bulletcount === 0 ){
         bullets.push({"x":500,"y":hero.y,"speed":250}) 
       }
@@ -115,6 +125,7 @@
       
     }
     for(i in bullets){
+      bullet = bullets[i]
       if(bulletcount > 0){
         if(bullet.x <= 0){
         bullet.x = 500
@@ -125,7 +136,7 @@
           bullet.x -= bullet.speed * modifier
         }
       }
-      bullet = bullets[i]
+      
       
       if(
         hero.x <= (bullet.x + bulletimg.width)
@@ -134,9 +145,8 @@
         && bullet.y <= (hero.y + chara.height)
     )
       {
-        console.log(hero.sheild)
         if(hero.sheild){
-          bullets.splice(i)
+          bullets.splice(i,1)
         }
         else{
           restart()
