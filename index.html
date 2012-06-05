@@ -2,14 +2,20 @@
 <html>
 <head>
     <title>Bullet Dodge</title>
+    <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
 </head>
 <body>
-  <h1>Bullet Dodge</h1>
+  <a href="https://github.com/powerc9000/bullet-dodge"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"></a>
+  <div class="container">
+  <div class="page-header">
+    <h1 class="">Bullet Dodge <small>An HTML5 game by Clay and Kaydon</small></h1>
+  </div>
   <canvas id="game"></canvas>
   <br>
-  <button onClick="start()">Start / Restart Game</button>
+  <button onClick="start()" class = "btn btn-primary btn-large">Start / Restart Game</button>
   <p>Use the arrow keys to move about, use "x" to activate your shield</p>
-  <p>You are the adventurer Reginold Staterly taking his newly invented jetpack for a spin when your arch rival Baron Spartly attempts to shoot you from the sky in his dirigable <em>The Flying Marshmellow</em>. </p><p>Have fun</p>
+  <p>You are the adventurer Reginold Staterly taking his newly invented jetpack for a spin when your arch rival Baron Spartly attempts to shoot you from the sky in his dirigable <em>The Flying Marshmellow</em>. Lucky for you he is a terrible shot, unlucky for you he has a lot of ammo. </p><p>Have fun!</p>
+</div>
 </body>
 <script type="text/javascript">
    var canvas = document.getElementById("game");
@@ -295,6 +301,7 @@
     countdown : false,
   }
    main = function(){
+    if(splashLoaded){
       if(gamestate.running){
           if(gamestate.countdown){
             countdown(then,Date.now())
@@ -326,6 +333,8 @@
         }
         
       }
+    }
+      
       
     //console.log(score)
    }
