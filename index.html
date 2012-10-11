@@ -247,8 +247,13 @@
     if(!hero.sheild ){
       if(sheilds >0 ){
         sheilds -= 1
-        hero.sheild = true
+        hero.sheild = true;
+        hero.sheildtimeleft = 10;
+        var timeout = setInterval(function(){
+            hero.sheildtimeleft -= 1;
+        }, 1000)
         setTimeout(function(){
+            clearInterval(timeout);
             hero.sheild = false;
         },10*1000);
       }
