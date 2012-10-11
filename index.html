@@ -239,7 +239,6 @@
       if(88 in keysDown){
         activateSheild(survived)
       }
-      deactivateSheild(survived)
       updatebullets(modifier,survived,once)
     }
       
@@ -249,23 +248,14 @@
       if(sheilds >0 ){
         sheilds -= 1
         hero.sheild = true
-        hero.sheildstart = survived
-        hero.sheildtimeleft = 10
+        setTimeout(function(){
+            hero.sheild = false;
+        },10*1000);
       }
     }
     
   }
-  deactivateSheild = function(survived){
-    if(hero.sheild){
-      if(survived - hero.sheildstart >= 10){
-        hero.sheild = false
-      }
-      else{
-        hero.sheildtimeleft = 10 - ( survived - hero.sheildstart)
-      }
-    }
-    
-  }
+
   countdown = function(then,now){
     //gamestate.countdown = false
     
