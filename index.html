@@ -76,7 +76,9 @@
    
 
    var keysDown = {};
-
+   var addNewBullet = true;
+   var seeker = true;
+   var reseek = 3;
    addEventListener("keydown", function (e) {
     keysDown[e.keyCode] = true;
    }, false);
@@ -139,8 +141,14 @@
    }
    renderbullets = function(){
       for(i in bullets){
-        bullet = bullets[i]
-        ctx.drawImage(bulletimg, bullet.x, bullet.y);
+        bullet = bullets[i];
+        if(bullet.type !== "seeker"){
+          ctx.drawImage(bulletimg, bullet.x, bullet.y);
+        }
+        else{
+          ctx.fillStyle = "red"
+          ctx.fillRect(bullet.x, bullet.y, bulletimg.width, bulletimg.height);
+        }
       }
    }
    randomInt= function(min,max){
@@ -149,33 +157,81 @@
    updatebullets = function(modifier,survived,once){
     bulletcount = bullets.length
     
-    if(bulletcount === 0 ){
-        bullets.push({"x":500,"y":hero.y,"speed":250}) 
-      }
-    if(survived % 10 === 0){
-      if(!once[survived]){
-        bullets.push({"x":randomInt(500,550),"y":hero.y,"speed":randomInt(200,300),speedchange:false})
-        once[survived] = true
-      }
-      
+    if(addNewBullet){
+        var i = bullets.push({"x":randomInt(500,550),"y":hero.y,"speed":randomInt(200,300),speedchange:false});
+        if(survived > 10 && seeker){
+          console.log("seeker")
+          bullets[i-1].type = "seeker";
+          bullets[i-1].speed = randomInt(100,200);
+          bullets[i-1].created = survived;
+          seeker = false;
+          setTimeout(function(){
+            seeker = true;
+          }, 20*1000)
+        }
+        addNewBullet = false;
+        setTimeout(function(){
+          addNewBullet = true;
+        },10*1000);
     }
     for(i in bullets){
       bullet = bullets[i]
-      if(bulletcount > 0){
-        if(score > 75 && !bullet.speedchange){
-          bullet.speed += 100
-          bullet.speedchange = true
-        }
-        if(bullet.x <= 0){
-        bullet.x = 500
-        bullet.y = randomInt(hero.y-75,hero.y+75)
-        
-        }
-        else{
-          bullet.x -= bullet.speed * modifier
+      if(bullet.type !== "seeker"){
+        if(bulletcount > 0){
+          if(score > 75 && !bullet.speedchange){
+            bullet.speed += 100
+            bullet.speedchange = true
+          }
+          if(bullet.x <= 0){
+          bullet.x = 500
+          bullet.y = randomInt(hero.y-75,hero.y+75)
+          
+          }
+          else{
+            bullet.x -= bullet.speed * modifier
+          }
         }
       }
-      
+      else{
+        if(bullet.seeking){
+          if(!bullet.setSeek){
+            bullet.setSeek = true;
+            setTimeout(function(){
+              bullet.seeking = false;
+              bullet.setSeek = false;
+            }, 200)
+          }
+          else{
+            if(bullet.x <= 0){
+            bullet.x = 500
+            bullet.y = randomInt(hero.y-75,hero.y+75)
+            
+            }
+            else{
+              bullet.x -= bullet.speed * modifier
+            }
+          }
+        }
+        else{
+          var movement = normalize(subtract([hero.x, hero.y],[bullet.x, bullet.y]));
+          movement[0] *= modifier * bullet.speed;
+          movement[1] *= modifier * bullet.speed;
+          if(movement[0] <0){
+            bullet.x -= bullet.speed * modifier
+          }
+          else{
+            bullet.x += movement[0];
+          }
+          bullet.y += movement[1];
+          setTimeout(function(){
+            bullet.seeking = true;
+          },200)
+        }
+        if(survived - bullet.created > 10){
+          bullets.splice(i,1)
+        }
+          
+      }
       
       if(
         hero.x <= (bullet.x + bulletimg.width)
@@ -239,7 +295,7 @@
       if(88 in keysDown){
         activateSheild(survived)
       }
-      updatebullets(modifier,survived,once)
+      updatebullets(modifier,survived,once);
     }
       
    }
@@ -327,6 +383,13 @@
       
       
     //console.log(score)
+   }
+   function subtract(v1, v2){
+      return [v1[0]-v2[0], v1[1]-v2[1]];
+   }
+   function normalize(v){
+      var magnitude = Math.sqrt((v[0]*v[0])+(v[1]+v[1]));
+      return [v[0]/magnitude, v[1]/magnitude];
    }
    start = function(){
     restart()
