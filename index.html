@@ -199,7 +199,7 @@
             setTimeout(function(){
               bullet.seeking = false;
               bullet.setSeek = false;
-            }, 200)
+            }, 100)
           }
           else{
             if(bullet.x <= 0){
@@ -225,7 +225,7 @@
           bullet.y += movement[1];
           setTimeout(function(){
             bullet.seeking = true;
-          },200)
+          },250)
         }
         if(survived - bullet.created > 10){
           bullets.splice(i,1)
