@@ -162,7 +162,7 @@
         if(survived > 10 && seeker){
           console.log("seeker")
           bullets[i-1].type = "seeker";
-          bullets[i-1].speed = randomInt(100,200);
+          bullets[i-1].speed = randomInt(300,400);
           bullets[i-1].created = survived;
           seeker = false;
           setTimeout(function(){
@@ -208,14 +208,15 @@
             
             }
             else{
-              bullet.x -= bullet.speed * modifier
+              bullet.x -= (bullet.speed/(survived - bullet.created+1)) * modifier
             }
           }
         }
         else{
           var movement = normalize(subtract([hero.x, hero.y],[bullet.x, bullet.y]));
-          movement[0] *= modifier * bullet.speed;
-          movement[1] *= modifier * bullet.speed;
+          console.log(bullet.speed/(survived - bullet.created))
+          movement[0] *= modifier * (bullet.speed/(survived - bullet.created+1));
+          movement[1] *= modifier * (bullet.speed/(survived - bullet.created+1));
           if(movement[0] <0){
             bullet.x -= bullet.speed * modifier
           }
